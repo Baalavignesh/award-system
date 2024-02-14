@@ -1,0 +1,12 @@
+service: award-backend
+frameworkVersion: "3"
+provider:
+  name: aws
+  runtime: nodejs18.x
+functions:
+  - ${file(src/handlers/hello/hello.yml)}
+  - ${file(src/handlers/users/user.yml)}
+
+plugins:
+  - serverless-plugin-typescript
+  - serverless-offline

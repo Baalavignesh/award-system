@@ -1,0 +1,13 @@
+GetUser:
+  handler: ./src/handlers/users/User.getUsers
+  events:
+    - httpApi:
+        path: /user
+        method: get
+
+AddUser:
+  handler: ./src/handlers/users/User.addUser
+  events:
+    - httpApi:
+        path: /adduser
+        method: post
