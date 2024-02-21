@@ -1,45 +1,27 @@
-import { Request, Response } from "express";
 import logger from "../../helpers/logger";
-import { sendResponse } from "../../helpers/response";
-import { ValidationException } from "../../exceptions/validation.exception";
-import { GetTwitter } from "../../services/users.service";
+import { AddUserService, GetUserService } from "../../services/users.service";
+import { APIGatewayProxyResult, Handler } from "aws-lambda";
+import { middyfy } from "../../middleware/handler";
 
 class Users {
-  static getUsers(req: Request, res: Response) {
-    logger.info("Get User controller called");
-    let result: any = {
-      statusCode: 200,
-      message: "User Fetched",
-    };
-    return sendResponse(result);
-  }
-
-  static getTwitterController = async (req: Request, res: Response) => {
-    try {
-      const twitter = await GetTwitter();
-      sendResponse(twitter);
-    } catch (error) {
-      logger.info("Error:", error);
-      throw new ValidationException(
-        "error fetchihng twitter",
-        JSON.stringify({
-          not: "working",
-        })
-      );
-    }
+  static getUser = async (event: any): Promise<APIGatewayProxyResult> => {
+    return await GetUserService();
   };
 
-  static addUser(req: Request, res: Response) {
-    throw new ValidationException(
-      "error here",
-      JSON.stringify({
-        statusCode: 404,
-        message: "",
-        body: "validation exception",
-      })
-    );
-  }
+  static addUser = async (event: any): Promise<APIGatewayProxyResult> => {
+    return await AddUserService();
+  };
 }
 
-export const getUsers = Users.getUsers;
-export const addUser = Users.addUser;
+const getUser = async (event: any): Promise<APIGatewayProxyResult> => {
+  logger.info("Get User handler called");
+  return await GetUserService();
+};
+
+export const getUsersHandler: Handler = middyfy(getUser, {
+  dbManagerOpts: { dev: true },
+});
+
+export const addUserHandler: Handler = middyfy(Users.addUser, {
+  dbManagerOpts: { dev: true },
+});

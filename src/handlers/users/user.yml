@@ -1,12 +1,12 @@
 GetUser:
-  handler: ./src/handlers/users/User.getUsers
+  handler: ./src/handlers/users/User.getUsersHandler
   events:
     - httpApi:
         path: /user
         method: get
 
 AddUser:
-  handler: ./src/handlers/users/User.addUser
+  handler: ./src/handlers/users/User.addUserHandler
   events:
     - httpApi:
         path: /adduser

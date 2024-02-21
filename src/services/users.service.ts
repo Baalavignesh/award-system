@@ -1,17 +1,35 @@
-import { SystemException } from "../exceptions/system.exception";
+import { InternalServerError } from "../helpers/errors";
 import logger from "../helpers/logger";
+import { APIGatewayProxyResult } from "aws-lambda";
 import { sendResponse } from "../helpers/response";
+import { User } from "../models/User.model";
+import { v4 as uuidv4 } from 'uuid';
 
-export const GetTwitter = async () => {
+
+export const GetUserService = async () => {
   try {
-    
+    const all_users = await User.findAll();
+    return sendResponse(all_users);
   } catch (error: any) {
-    if (error instanceof SystemException) {
-      throw error;
-    } else {
-      logger.info("Error adding user:", error);
+    logger.info("Error getting all user in service: ", error);
+    throw new InternalServerError(error);
+  }
+};
 
-      throw sendResponse(error);
-    }
+export const AddUserService = async (): Promise<APIGatewayProxyResult> => {
+  try {
+    const user_data = {
+      id: uuidv4(),
+      email: "baalavignesha@presidio.com",
+      name: "baalavignesh",
+      role: "Admin",
+    };
+
+    console.log(user_data);
+    const added_users = await User.create(user_data);
+    return sendResponse(added_users);
+  } catch (error: any) {
+    logger.info("Error adding user in service: ", error);
+    throw new InternalServerError(error);
   }
 };
